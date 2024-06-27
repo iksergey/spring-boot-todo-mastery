@@ -1,7 +1,9 @@
 package ru.ksergey.todolist.dao;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import ru.ksergey.todolist.exception.TodoItemNotFoundException;
 import ru.ksergey.todolist.model.TodoItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -52,6 +54,16 @@ public class TodoItemDaoImpl implements TodoItemDao {
 
         String selectSql = "SELECT * FROM todo_items WHERE id = ?";
         return jdbcTemplate.queryForObject(selectSql, todoItemRowMapper, id);
+    }
+
+    @Override
+    public TodoItem getTodoItemById(Long id) {
+        String sql = "SELECT * FROM todo_items WHERE id = ?";
+        List<TodoItem> results = jdbcTemplate.query(sql, todoItemRowMapper, id);
+        if (results.isEmpty()) {
+            throw new TodoItemNotFoundException("TodoItem not found with id: " + id);
+        }
+        return results.getFirst();
     }
 
 }

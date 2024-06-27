@@ -7,4 +7,6 @@ public interface TodoItemDao {
     List<TodoItem> getAllTodoItems();
 
     TodoItem createTodoItem(TodoItem todoItem);
+
+    TodoItem getTodoItemById(Long id);
 }

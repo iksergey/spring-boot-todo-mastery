@@ -11,7 +11,6 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import java.sql.*;
 import java.util.List;
-import java.sql.ResultSet;
 import java.util.Objects;
 
 @Repository
@@ -66,4 +65,20 @@ public class TodoItemDaoImpl implements TodoItemDao {
         return results.getFirst();
     }
 
+    @Override
+    public TodoItem updateTodoItem(Long id, TodoItem todoItem) {
+        String sql = "UPDATE todo_items SET title = ?, description = ?, status = ? WHERE id = ?";
+        int updatedRows = jdbcTemplate.update(sql,
+                todoItem.getTitle(),
+                todoItem.getDescription(),
+                todoItem.getStatus().name(),
+                id);
+
+        if (updatedRows == 0) {
+            throw new TodoItemNotFoundException("TodoItem not found with id: " + id);
+        }
+
+        todoItem.setId(id);
+        return getTodoItemById(id);
+    }
 }

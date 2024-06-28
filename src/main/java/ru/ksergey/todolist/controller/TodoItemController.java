@@ -35,4 +35,15 @@ public class TodoItemController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<TodoItem> updateTodoItem(@PathVariable Long id, @RequestBody TodoItem todoItem) {
+        try {
+            TodoItem updatedItem = todoItemDao.updateTodoItem(id, todoItem);
+            return ResponseEntity.ok(updatedItem);
+        } catch (TodoItemNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
 }

@@ -76,6 +76,36 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "update item by id",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"title\": \"Обновлённая запись\",\n    \"description\": \"Обновлённое описание\",\n    \"status\": \"IN_PROGRESS\",\n    \"createdAt\": \"2024-06-28T01:48:12\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/todo/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"todo",
+						"1"
+					]
+				}
+			},
+			"response": []
 		}
 	]
 }

@@ -9,4 +9,6 @@ public interface TodoItemDao {
     TodoItem createTodoItem(TodoItem todoItem);
 
     TodoItem getTodoItemById(Long id);
+
+    TodoItem updateTodoItem(Long id, TodoItem todoItem);
 }

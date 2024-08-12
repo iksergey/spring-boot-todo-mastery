@@ -1,12 +1,18 @@
 package ru.ksergey.todolist.dao;
 
+
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+
+import ru.ksergey.todolist.dto.UpdateToDoDto;
+import ru.ksergey.todolist.exceptions.ToDoNoExistException;
 import ru.ksergey.todolist.model.TodoItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+
 import java.sql.*;
 import java.util.List;
 import java.sql.ResultSet;
@@ -35,6 +41,20 @@ public class TodoItemDaoImpl implements TodoItemDao {
     }
 
     @Override
+    public TodoItem getTodoItemById(Long id) {
+        String sql = "SELECT * FROM todo_items WHERE id = ?";
+        TodoItem todoItem;
+
+        try {
+            todoItem = jdbcTemplate.queryForObject(sql, todoItemRowMapper, id);
+        } catch (RuntimeException e) {
+            throw new ToDoNoExistException("No such ToDo exist.");
+        }
+        return todoItem;
+    }
+
+
+    @Override
     public TodoItem createTodoItem(TodoItem todoItem) {
         String sql = "INSERT INTO todo_items (title, description, status) VALUES (?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -54,4 +74,24 @@ public class TodoItemDaoImpl implements TodoItemDao {
         return jdbcTemplate.queryForObject(selectSql, todoItemRowMapper, id);
     }
 
+    @Override
+    public TodoItem updateTodoItem(UpdateToDoDto todoItem, Long id) {
+        String sql = "UPDATE todo_items SET title = ?, description = ?, status = ? WHERE id = ?";
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setString(1, todoItem.getTitle());
+            ps.setString(2, todoItem.getDescription());
+            ps.setString(3, todoItem.getStatus().name());
+            ps.setString(4, id.toString());
+            return ps;
+        });
+
+        try {
+            String selectSql = "SELECT * FROM todo_items WHERE id = ?";
+            return jdbcTemplate.queryForObject(selectSql, todoItemRowMapper, id);
+        } catch (IncorrectResultSizeDataAccessException e) {
+            throw new ToDoNoExistException("No such ToDo exist.");
+        }
+    }
 }
